@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>IngenioSnack - FIS UNCP</title>
+    <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <header class="app-header">
+        <div class="logo" id="logo-home" style="cursor: pointer;" title="Ir al Inicio">
+            <img src="logo_fis.png" alt="Logo FIS" style="height: 40px; width: auto; object-fit: contain;">
+            IngenioSnack
+        </div>
+        <nav class="view-toggle">
+            <button id="btn-view-home" class="active"><i class="fa-solid fa-utensils"></i> Menú</button>
+            <button id="btn-view-client"><i class="fa-solid fa-user"></i> Cliente</button>
+            <button id="btn-view-admin"><i class="fa-solid fa-shop"></i> Admin</button>
+        </nav>
+    </header>
+
+    <main class="container">
+        <!-- VISTA MENÚ PRINCIPAL -->
+        <section id="view-home" class="view-section active">
+            <div class="welcome-banner" style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem;">
+                <div>
+                    <h1>Pide antes del recreo</h1>
+                    <p>Evita las filas. Pide ahora, paga en efectivo y recoge al instante.</p>
+                </div>
+                <div class="serious-images" style="display: flex; gap: 10px;">
+                    <img src="imagen_seria_2.jpg" alt="Michi Hamburguesa" style="height: 120px; border-radius: 8px; box-shadow: 0 4px 10px rgba(0,0,0,0.3); object-fit: cover; border: 3px solid white;">
+                </div>
+            </div>
+
+            <div class="menu-and-cart">
+                <div class="menu-container">
+                    <h2>Menú Disponible</h2>
+                    <div id="student-menu" class="product-grid">
+                        <!-- Products rendered via JS -->
+                    </div>
+                </div>
+
+                <div class="cart-container">
+                    <div class="order-panel" id="order-panel">
+                        <div class="cart-summary">
+                            <h2>Tu Pedido</h2>
+                            <div id="empty-cart-msg" class="empty-msg">Selecciona un producto del menú</div>
+                            <div id="cart-items"></div>
+                            <div class="total-row">Total: S/ <span id="cart-total">0.00</span></div>
+                        </div>
+                        <div class="form-group">
+                            <label for="student-code">Código Universitario</label>
+                            <input type="text" id="student-code" placeholder="Ej: 2024101454E" maxlength="11" style="text-transform: uppercase;">
+                        </div>
+                        <button id="btn-place-order" class="btn-primary" disabled>
+                            <i class="fa-solid fa-paper-plane"></i> Pedir (Pago Contra Entrega)
+                        </button>
+                    </div>
+
+                </div>
+            </div>
+
+            <!-- Ticket Modal -->
+            <div id="ticket-modal" class="modal">
+                <div class="modal-content ticket-card">
+                    <div class="ticket-header">
+                        <i class="fa-solid fa-circle-check"></i>
+                        <h2>¡Pedido Confirmado!</h2>
+                    </div>
+                    <div class="ticket-body">
+                        <p class="ticket-number">Turno: <strong id="ticket-num">#001</strong></p>
+                        <p class="ticket-info">Tu pedido ha sido enviado a cocina. Ve a la pestaña <strong>Cliente</strong> para rastrear el estado.</p>
+                        <div class="ticket-divider"></div>
+                        <ul id="ticket-items-list" class="ticket-items"></ul>
+                        <div class="ticket-divider"></div>
+                        <div class="ticket-totals">
+                            <p>Total a pagar: <strong>S/ <span id="ticket-total-val"></span></strong></p>
+                        </div>
+                        <p class="ticket-code">Alumno: <span id="ticket-code-val"></span></p>
+                    </div>
+                    <button id="btn-close-ticket" class="btn-secondary">Aceptar y Cerrar</button>
+                </div>
+            </div>
+        </section>
+
+        <!-- VISTA CLIENTE (NUEVA) -->
+        <section id="view-client" class="view-section">
+            <div class="client-dashboard" style="max-width: 800px; margin: 0 auto;">
+                <h2 style="font-size: 2rem; color: var(--primary);"><i class="fa-solid fa-magnifying-glass"></i> Rastreador de Pedidos</h2>
+                <p class="stamps-sub">Ingresa tu código universitario para ver el estado de tu almuerzo, historial y tus recompensas.</p>
+                
+                <div class="form-group" style="margin: 2rem 0;">
+                    <input type="text" id="check-code" placeholder="Ej: 2024101454E" maxlength="11" style="text-transform: uppercase; font-size: 1.2rem; text-align: center;">
+                    <button id="btn-check-status" class="btn-primary" style="margin-top: 1rem;"><i class="fa-solid fa-search"></i> Consultar mis datos</button>
+                </div>
+                
+                <div id="status-display" style="display: none; margin-top: 2rem; text-align: left; background: var(--bg); padding: 2rem; border-radius: var(--radius);">
+                    
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 2rem;">
+                        <!-- Estado de Pedidos Activos -->
+                        <div class="orders-status-section">
+                            <h4 style="margin-bottom: 1rem; font-size: 1.3rem; color: var(--secondary);"><i class="fa-solid fa-bell"></i> En Curso</h4>
+                            <div id="client-orders-list"></div>
+                        </div>
+
+                        <!-- Historial de Pedidos -->
+                        <div class="orders-history-section">
+                            <h4 style="margin-bottom: 1rem; font-size: 1.3rem; color: var(--gray);"><i class="fa-solid fa-clock-rotate-left"></i> Historial Reciente</h4>
+                            <div id="client-history-list"></div>
+                        </div>
+                    </div>
+                    
+                    <hr style="border: 0; border-top: 2px dashed #ccc; margin: 2rem 0;">
+
+                    <!-- Sellos -->
+                    <div class="stamps-section" style="text-align: center; max-width: 500px; margin: 0 auto;">
+                        <h4 style="margin-bottom: 1rem; font-size: 1.5rem; color: var(--primary);"><i class="fa-solid fa-stamp"></i> Mi Tarjeta de Fidelidad</h4>
+                        <p style="margin-bottom: 1rem;">Acumula 10 sándwiches y gana 1 café americano.</p>
+                        <div class="stamps-progress" style="font-size: 1.5rem;">
+                            <strong><span id="stamps-count">0</span> / 10</strong> Sándwiches
+                        </div>
+                        <div class="stamps-bar" style="height: 25px;">
+                            <div class="stamps-fill" id="stamps-fill"></div>
+                        </div>
+                        <p id="stamps-reward" class="stamps-reward" style="display: none; font-size: 1.2rem; margin-top: 1rem;"><i class="fa-solid fa-gift"></i> ¡Felicidades! Tienes un café gratis esperando por ti.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- VISTA ADMIN (SR. JULIO) -->
+        <section id="view-admin" class="view-section">
+            <div class="admin-dashboard">
+                <div class="admin-panel menu-management">
+                    <h2><i class="fa-solid fa-boxes-stacked"></i> Menú (Tiempo Real)</h2>
+                    <p class="subtitle">Desactiva productos sin stock para bloquear pedidos (HU-02, HU-06).</p>
+                    <div id="admin-menu" class="admin-product-list">
+                        <!-- Admin products via JS -->
+                    </div>
+                </div>
+
+                <div class="admin-panel orders-management">
+                    <h2><i class="fa-solid fa-receipt"></i> Pedidos Activos</h2>
+                    <p class="subtitle">Cobro contra entrega (HU-04).</p>
+                    <div id="admin-orders" class="orders-list">
+                        <!-- Orders via JS -->
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- Admin Login Modal -->
+    <div id="login-modal" class="modal">
+        <div class="modal-content ticket-card">
+            <i class="fa-solid fa-lock" style="font-size: 3rem; color: var(--primary); margin-bottom: 1rem;"></i>
+            <h2>Acceso Restringido</h2>
+            <p style="margin-bottom: 1.5rem;">Solo para el Sr. Julio.</p>
+            <div class="form-group">
+                <input type="password" id="admin-password" placeholder="Contraseña">
+                <p id="login-error" style="color: var(--primary); font-size: 0.8rem; display: none; margin-top: 0.5rem;">Contraseña incorrecta.</p>
+            </div>
+            <button id="btn-login-admin" class="btn-primary">Ingresar</button>
+            <button id="btn-cancel-login" class="btn-secondary" style="margin-top: 10px; width: 100%;">Cancelar</button>
+        </div>
+    </div>
+
+    <!-- Toast Notification for Alerts (HU-06) -->
+    <div id="toast-container" class="toast-container"></div>
+
+    <script src="app.js"></script>
+</body>
+</html>
